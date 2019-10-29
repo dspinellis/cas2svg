@@ -6,18 +6,27 @@
 use strict;
 use warnings;
 
+# Output file
 my $out;
+
+# True if currently drawing
 my $draw;
+
 my $ox;
 my $oy;
+
+# Accumulated polyline
 my $polyline = '';
+
+# Movement unit
+my $unit = 50;
 
 # Map a character a-n into a value 0-1000
 sub charmap
 {
 	my ($c) = @_;
 	my $v = ord($c) - ord('a');
-	return sprintf('%.0f', $v / 16 * 800 + 100);
+	return sprintf('%.0f', $v * $unit + 100);
 }
 
 # Draw the accumulated polyline
