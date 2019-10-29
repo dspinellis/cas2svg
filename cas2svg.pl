@@ -32,7 +32,9 @@ sub charmap
 # Draw the accumulated polyline
 sub draw_polyline
 {
-	print $out qq{\t<polyline points="$polyline" stroke="black" stroke-width="40" stroke-linecap="round" fill="none" stroke-linejoin="round" />\n};
+	if ($polyline =~ m/^\d+ \d+ \d/) {
+		print $out qq{\t<polyline points="$polyline" stroke="black" stroke-width="40" stroke-linecap="round" fill="none" stroke-linejoin="round" />\n};
+	}
 	$polyline = "$ox $oy";
 }
 
@@ -45,9 +47,11 @@ while (<>) {
 		print $out qq{<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">\n};
 
 	} elsif (/^x/) {
+		print $out "<!-- x (pen up) -->\n";
 		$draw = 0;
 		draw_polyline();
 	} elsif (/^v/) {
+		print $out "<!-- v (pen down) -->\n";
 		$draw = 1;
 		draw_polyline();
 	} elsif (/^r/) {
@@ -59,6 +63,7 @@ while (<>) {
 	} elsif (/^([a-n])([a-n])$/) {
 		my $y = charmap($1);
 		my $x = charmap($2);
+		print $out "<!-- moveto $1, $2 ($x, $y) -->\n";
 		if ($draw) {
 			$polyline .= " $x $y";
 		}
