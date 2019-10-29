@@ -16,7 +16,7 @@ my $ox;
 my $oy;
 
 # Accumulated polyline
-my $polyline = '';
+my @polyline;
 
 # Movement unit
 my $unit = 50;
@@ -32,10 +32,11 @@ sub charmap
 # Draw the accumulated polyline
 sub draw_polyline
 {
-	if ($polyline =~ m/^\d+ \d+ \d/) {
-		print $out qq{\t<polyline points="$polyline" stroke="black" stroke-width="40" stroke-linecap="round" fill="none" stroke-linejoin="round" />\n};
+	if ($#polyline > 1) {
+		my $polystring = join(' ', @polyline);
+		print $out qq{\t<polyline points="$polystring" stroke="black" stroke-width="40" stroke-linecap="round" fill="none" stroke-linejoin="round" />\n};
 	}
-	$polyline = "$ox $oy";
+	@polyline = ($ox, $oy);
 }
 
 $ox = charmap('a');
@@ -65,7 +66,7 @@ while (<>) {
 		my $x = charmap($2);
 		print $out "<!-- moveto $1, $2 ($x, $y) -->\n";
 		if ($draw) {
-			$polyline .= " $x $y";
+			push(@polyline, $x, $y);
 		}
 		$ox = $x;
 		$oy = $y;
