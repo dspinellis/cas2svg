@@ -20,6 +20,23 @@ my @polyline;
 
 # Movement unit
 my $unit = 50;
+# Size of a complete character cell
+my $cell_size = 1024;
+
+# Create a map of all characters
+my $map;
+
+# Where to draw the character
+my $x_offset;
+my $y_offset = 0;
+
+if ($ARGV[0] eq '-m') {
+	$map = 1;
+	shift;
+	open($out, '>', "all.svg") || die;
+	print $out '<svg viewBox="0 0 ', $cell_size * 8, ' ',
+		$cell_size * 16, qq{" xmlns="http://www.w3.org/2000/svg">\n};
+}
 
 # Map a character a-n into a value 0-1000
 sub charmap
@@ -33,6 +50,14 @@ sub charmap
 sub draw_polyline
 {
 	if ($#polyline > 1) {
+		if ($map) {
+			# Shift the character into its position
+			for (my $i = 0; $i <= $#polyline; $i += 2) {
+				$polyline[$i] += $x_offset;
+				$polyline[$i + 1] += $y_offset;
+			}
+		}
+
 		my $polystring = join(' ', @polyline);
 		print $out qq{\t<polyline points="$polystring" stroke="black" stroke-width="40" stroke-linecap="round" fill="none" stroke-linejoin="round" />\n};
 	}
@@ -43,10 +68,24 @@ $ox = charmap('a');
 $oy = charmap('n');
 
 while (<>) {
-	if (/^:c(.)/) {
-		open($out, '>', "c$1.svg") || die;
-		print $out qq{<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">\n};
-
+	chop;
+	if (/^:(.*)/) {
+		my $name = $1;
+		if ($map) {
+			if (defined($x_offset)) {
+				$x_offset += $cell_size;
+			} else {
+				$x_offset = 0;
+			}
+			if ($x_offset > $cell_size * 8) {
+				$x_offset = 0;
+				$y_offset += $cell_size;
+			}
+		} else {
+			open($out, '>', "$name.svg") || die;
+			print $out qq{<svg viewBox="0 0 $cell_size $cell_size" xmlns="http://www.w3.org/2000/svg">\n};
+		}
+		print $out "<!-- Character $name -->\n";
 	} elsif (/^x/) {
 		print $out "<!-- x (pen up) -->\n";
 		$draw = 0;
@@ -57,11 +96,13 @@ while (<>) {
 		draw_polyline();
 	} elsif (/^r/) {
 		draw_polyline();
-		print $out "</svg>\n";
-		close($out);
+		if (!$map) {
+			print $out "</svg>\n";
+			close($out);
+		}
 		$ox = charmap('a');
 		$oy = charmap('n');
-	} elsif (/^([a-n])([a-n])$/) {
+	} elsif (/^([a-p])([a-n])$/) {
 		my $y = charmap($1);
 		my $x = charmap($2);
 		print $out "<!-- moveto $1, $2 ($x, $y) -->\n";
@@ -73,6 +114,11 @@ while (<>) {
 	} elsif (/^$/) {
 		next;
 	} else {
-		print STDERR "$ARGV($.): Unknown command $_";
+		print STDERR "$ARGV($.): Unknown command $_\n";
 	}
+}
+
+if ($map) {
+	print $out "</svg>\n";
+	close($out);
 }
