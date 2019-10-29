@@ -59,7 +59,7 @@ while (<>) {
 		print $out "</svg>\n";
 		close($out);
 		$ox = charmap('a');
-		$oy = charmap('m');
+		$oy = charmap('n');
 	} elsif (/^([a-n])([a-n])$/) {
 		my $y = charmap($1);
 		my $x = charmap($2);
