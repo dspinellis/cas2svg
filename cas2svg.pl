@@ -33,7 +33,7 @@ my $y_offset = 0;
 if ($ARGV[0] eq '-m') {
 	$map = 1;
 	shift;
-	open($out, '>', "all.svg") || die;
+	open($out, '>', "build/all.svg") || die;
 	print $out '<svg viewBox="0 0 ', $cell_size * 8, ' ',
 		$cell_size * 16, qq{" xmlns="http://www.w3.org/2000/svg">\n};
 }
@@ -82,7 +82,7 @@ while (<>) {
 				$y_offset += $cell_size;
 			}
 		} else {
-			open($out, '>', "$name.svg") || die;
+			open($out, '>', "build/$name.svg") || die;
 			print $out qq{<svg viewBox="0 0 $cell_size $cell_size" xmlns="http://www.w3.org/2000/svg">\n};
 		}
 		print $out "<!-- Character $name -->\n";
