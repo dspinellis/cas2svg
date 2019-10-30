@@ -12,7 +12,10 @@ build/ca.svg: cas2svg.pl $(CASFILES)
 	./cas2svg.pl $(CASFILES)
 
 scope.cas:
-	curl $(PDP7URL)/$? >$@
+	curl $(PDP7URL)/$@ >$@
 
 cas.cas:
-	curl $(PDP7URL)/$? >$@
+	curl $(PDP7URL)/$@ >$@
+
+clean:
+	rm -rf *.cas build
