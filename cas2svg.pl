@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Convert Graphics II character assembly to SVG
+# Convert Graphic 2 character assembly to SVG
 #
 # Copyright 2019 Diomidis Spinellis
 #
