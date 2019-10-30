@@ -67,6 +67,18 @@ sub charmap
 	return sprintf('%.0f', $v * $unit + 100);
 }
 
+sub sign
+{
+	my ($a) = @_;
+	if ($a == 0) {
+		return 0;
+	} elsif ($a < 0) {
+		return -1;
+	} else {
+		return 1;
+	}
+}
+
 # Draw the accumulated polyline
 sub draw_polyline
 {
@@ -77,6 +89,9 @@ sub draw_polyline
 				$polyline[$i] += $x_offset;
 				$polyline[$i + 1] += $y_offset;
 			}
+		}
+		for (my $i = 0; $i < 2; $i++) {
+			$polyline[$#polyline - $i] -= sign($polyline[$#polyline - $i] - $polyline[$#polyline - 2 - $i]) * $unit;
 		}
 
 		my $polystring = join(' ', @polyline);
