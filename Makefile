@@ -5,11 +5,11 @@ all: build/all.svg build/ca.svg
 
 build/all.svg: cas2svg.pl $(CASFILES)
 	mkdir -p build
-	./cas2svg.pl -m $(CASFILES)
+	perl ./cas2svg.pl -m $(CASFILES)
 
 build/ca.svg: cas2svg.pl $(CASFILES)
 	mkdir -p build
-	./cas2svg.pl $(CASFILES)
+	perl ./cas2svg.pl $(CASFILES)
 
 scope.cas:
 	curl $(PDP7URL)/$@ >$@
